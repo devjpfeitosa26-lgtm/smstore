@@ -4,18 +4,18 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 const $ = id => document.getElementById(id);
 const fmtBRL = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v||0));
 const onlyNums = s => String(s||'').replace(/\D/g,'');
+const esc = s => String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 
-const st = { user:null, loja:null, produtos:[] };
+const st = { user:null, loja:null, produtos:[], categorias:[] };
 
 /* ── AUTH GUARD ── */
 async function boot(){
   const { data:{session} } = await sb.auth.getSession();
   if(!session){ location.replace('login.html'); return; }
   st.user = session.user;
-  await Promise.all([carregarLoja(), carregarProdutos()]);
+  await Promise.all([carregarLoja(), carregarCategorias(), carregarProdutos()]);
 }
 sb.auth.onAuthStateChange((e,s)=>{ if(!s) location.replace('login.html'); });
-
 $('sair').onclick = async ()=>{ await sb.auth.signOut(); location.replace('login.html'); };
 
 /* ── TABS ── */
@@ -24,6 +24,7 @@ document.querySelectorAll('.tab').forEach(t=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
     $('sec-prod').classList.toggle('show', t.dataset.tab==='prod');
+    $('sec-cats').classList.toggle('show', t.dataset.tab==='cats');
     $('sec-loja').classList.toggle('show', t.dataset.tab==='loja');
   };
 });
@@ -38,28 +39,102 @@ async function carregarLoja(){
     $('l-wpp').value  = st.loja.whatsapp || '';
     $('l-desc').value = st.loja.descricao || '';
     $('l-cor').value  = st.loja.cor_tema || '#b5651d';
+    if(st.loja.logo_url){ $('l-logo-prev').src=st.loja.logo_url; $('l-logo-prev').style.display='block'; $('l-logo-vazio').style.display='none'; }
   }
 }
 
+let arquivoLogo = null;
+$('l-logo-file').onchange = e=>{
+  arquivoLogo = e.target.files[0] || null;
+  if(arquivoLogo){ $('l-logo-prev').src=URL.createObjectURL(arquivoLogo); $('l-logo-prev').style.display='block'; $('l-logo-vazio').style.display='none'; }
+};
+
 $('salvar-loja').onclick = async ()=>{
   const fb=(m,t='')=>{ $('fb-loja').textContent=m; $('fb-loja').className='fb '+t; };
+  if(onlyNums($('l-wpp').value).length < 12){ fb('WhatsApp inválido. Use DDI+DDD+número, só dígitos (ex.: 5562999999999).','error'); return; }
+  $('salvar-loja').disabled=true; fb('Salvando…');
+
+  let logo_url = st.loja?.logo_url || '';
+  if(arquivoLogo){
+    fb('Enviando logo…');
+    const ext = (arquivoLogo.name.split('.').pop()||'png').toLowerCase();
+    const path = `${st.user.id}/logo-${Date.now()}.${ext}`;
+    const { error:upErr } = await sb.storage.from('logos').upload(path, arquivoLogo, { upsert:true });
+    if(upErr){ fb('Erro ao enviar logo: '+upErr.message,'error'); $('salvar-loja').disabled=false; return; }
+    logo_url = sb.storage.from('logos').getPublicUrl(path).data.publicUrl;
+  }
+
   const payload = {
     owner_id: st.user.id,
     nome_loja: $('l-nome').value.trim() || 'Minha Loja',
     whatsapp: onlyNums($('l-wpp').value),
     descricao: $('l-desc').value.trim(),
-    cor_tema: $('l-cor').value
+    cor_tema: $('l-cor').value,
+    logo_url
   };
-  if(payload.whatsapp.length < 12){ fb('WhatsApp inválido. Use DDI+DDD+número, só dígitos (ex.: 5562999999999).','error'); return; }
-  $('salvar-loja').disabled=true; fb('Salvando…');
   let error;
   if(st.loja){ ({error} = await sb.from('loja').update(payload).eq('id', st.loja.id)); }
   else { ({error} = await sb.from('loja').insert(payload)); }
   $('salvar-loja').disabled=false;
   if(error){ fb('Erro: '+error.message,'error'); return; }
+  arquivoLogo=null;
   fb('✓ Dados salvos!','success');
   await carregarLoja();
 };
+
+/* ── CATEGORIAS ── */
+async function carregarCategorias(){
+  const { data } = await sb.from('categorias').select('*').eq('owner_id', st.user.id).order('nome');
+  st.categorias = data || [];
+  renderCategorias();
+  preencherSelectCategorias();
+}
+
+function renderCategorias(){
+  if(!st.categorias.length){
+    $('lista-cats').innerHTML = `<p style="color:var(--muted);font-size:.88rem">Nenhuma categoria ainda. Adicione a primeira acima.</p>`;
+    return;
+  }
+  $('lista-cats').innerHTML = st.categorias.map(c=>`
+    <div style="display:flex;align-items:center;gap:11px;padding:11px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:#fff">
+      <span style="font-size:1.2rem">${esc(c.emoji||'🛍️')}</span>
+      <b style="flex:1">${esc(c.nome)}</b>
+      <button class="ic" data-delcat="${c.id}">🗑️</button>
+    </div>`).join('');
+  $('lista-cats').querySelectorAll('[data-delcat]').forEach(b=>b.onclick=()=>apagarCategoria(b.dataset.delcat));
+}
+
+function preencherSelectCategorias(){
+  const sel = $('p-cat');
+  const nomes = st.categorias.map(c=>c.nome);
+  if(!nomes.length){ sel.innerHTML = `<option value="Geral">Geral</option>`; return; }
+  sel.innerHTML = nomes.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+}
+
+$('add-cat').onclick = async ()=>{
+  const fb=(m,t='')=>{ $('fb-cat').textContent=m; $('fb-cat').className='fb '+t; };
+  const nome = $('c-nome').value.trim();
+  const emoji = $('c-emoji').value.trim() || '🛍️';
+  if(!nome){ fb('Digite o nome da categoria.','error'); return; }
+  $('add-cat').disabled=true; fb('Adicionando…');
+  const { error } = await sb.from('categorias').insert({ owner_id:st.user.id, nome, emoji });
+  $('add-cat').disabled=false;
+  if(error){ fb(error.message.includes('duplicate')?'Já existe uma categoria com esse nome.':'Erro: '+error.message,'error'); return; }
+  $('c-nome').value=''; $('c-emoji').value='';
+  fb('✓ Categoria criada!','success');
+  await carregarCategorias();
+};
+
+async function apagarCategoria(id){
+  const c = st.categorias.find(x=>x.id===id);
+  const emUso = st.produtos.filter(p=>p.categoria===c.nome).length;
+  let msg = `Apagar a categoria "${c?.nome}"?`;
+  if(emUso) msg += `\n\nAtenção: ${emUso} produto(s) usam esta categoria. Eles continuarão existindo, mas sem categoria.`;
+  if(!confirm(msg)) return;
+  const { error } = await sb.from('categorias').delete().eq('id', id);
+  if(error){ alert('Erro ao apagar: '+error.message); return; }
+  await carregarCategorias();
+}
 
 /* ── PRODUTOS ── */
 async function carregarProdutos(){
@@ -92,7 +167,7 @@ function renderTabela(){
     </tr></thead><tbody>${
       st.produtos.map(p=>`<tr>
         <td>${p.imagem_url?`<img class="pthumb" src="${p.imagem_url}">`:`<div class="pthumb"></div>`}</td>
-        <td><b>${esc(p.nome)}</b></td>
+        <td><b>${esc(p.nome)}</b>${p.resumo?`<br><span style="color:var(--muted);font-size:.78rem">${esc(p.resumo)}</span>`:''}</td>
         <td class="col-hide">${esc(p.categoria||'-')}</td>
         <td>${fmtBRL(p.preco)}</td>
         <td class="col-hide">${p.estoque}</td>
@@ -107,20 +182,28 @@ function renderTabela(){
   $('lista').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>apagar(b.dataset.del));
 }
 
-/* ── MODAL ── */
+/* ── MODAL PRODUTO ── */
 let arquivoFoto = null;
 function abrirModal(id){
   arquivoFoto = null;
   $('fb-prod').textContent='';
   $('p-file').value='';
   $('p-prev').style.display='none';
+  preencherSelectCategorias();
   const p = id ? st.produtos.find(x=>x.id===id) : null;
   $('modal-titulo').textContent = p ? 'Editar produto' : 'Novo produto';
   $('p-id').value     = p?.id || '';
   $('p-nome').value   = p?.nome || '';
   $('p-preco').value  = p?.preco ?? '';
   $('p-estoque').value= p?.estoque ?? 1;
-  $('p-cat').value    = p?.categoria || '';
+  $('p-resumo').value = p?.resumo || '';
+  if(p?.categoria){
+    // garante que a categoria do produto exista no select mesmo se foi removida
+    if(!st.categorias.some(c=>c.nome===p.categoria)){
+      const opt=document.createElement('option'); opt.value=p.categoria; opt.textContent=p.categoria+' (removida)'; $('p-cat').appendChild(opt);
+    }
+    $('p-cat').value = p.categoria;
+  }
   $('p-desc').value   = p?.descricao || '';
   $('p-ativo').checked    = p ? p.ativo : true;
   $('p-destaque').checked = p ? p.destaque : false;
@@ -128,7 +211,10 @@ function abrirModal(id){
   $('ov').classList.add('show');
 }
 function fecharModal(){ $('ov').classList.remove('show'); }
-$('novo').onclick = ()=>abrirModal(null);
+$('novo').onclick = ()=>{
+  if(!st.categorias.length){ alert('Crie pelo menos uma categoria antes (aba Categorias).'); return; }
+  abrirModal(null);
+};
 $('cancelar').onclick = fecharModal;
 $('ov').onclick = e=>{ if(e.target===$('ov')) fecharModal(); };
 
@@ -147,7 +233,6 @@ $('salvar').onclick = async ()=>{
   const id = $('p-id').value;
   let imagem_url = id ? (st.produtos.find(x=>x.id===id)?.imagem_url || '') : '';
 
-  // upload da foto, se houver nova
   if(arquivoFoto){
     fb('Enviando foto…');
     const ext = (arquivoFoto.name.split('.').pop()||'jpg').toLowerCase();
@@ -160,7 +245,8 @@ $('salvar').onclick = async ()=>{
   const payload = {
     owner_id: st.user.id, nome, preco,
     estoque: parseInt($('p-estoque').value||'0',10),
-    categoria: $('p-cat').value.trim() || 'Geral',
+    resumo: $('p-resumo').value.trim(),
+    categoria: $('p-cat').value || 'Geral',
     descricao: $('p-desc').value.trim(),
     ativo: $('p-ativo').checked, destaque: $('p-destaque').checked,
     imagem_url
@@ -182,7 +268,5 @@ async function apagar(id){
   if(error){ alert('Erro ao apagar: '+error.message); return; }
   await carregarProdutos();
 }
-
-const esc = s => String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 
 boot();
