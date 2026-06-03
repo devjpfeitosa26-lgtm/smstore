@@ -14,14 +14,22 @@ const ICONES = {
   'beleza & cuidados':'💄','beleza':'💄','cosméticos':'💄',
   'geral':'🛍️'
 };
-const iconeDe = c => ICONES[(c||'').toLowerCase()] || '🛍️';
+const iconeDe = c => {
+  // 1º: usa o emoji que a lojista definiu no painel (tabela categorias)
+  const cat = (state.categorias||[]).find(x => (x.nome||'').toLowerCase() === (c||'').toLowerCase());
+  if (cat && cat.emoji) return cat.emoji;
+  // 2º: lista fixa de reserva; 3º: padrão
+  return ICONES[(c||'').toLowerCase()] || '🛍️';
+};
 
-const state = { loja:null, produtos:[], filtro:'Todos', busca:'' };
+const state = { loja:null, produtos:[], categorias:[], filtro:'Todos', busca:'' };
 
 async function init(){
   if (usandoSupabase){
     const { data: lojas } = await sb.from('loja').select('*').limit(1);
     state.loja = (lojas && lojas[0]) || null;
+    const { data: cats } = await sb.from('categorias').select('*');
+    state.categorias = cats || [];
     const { data: prods } = await sb.from('produtos').select('*').eq('ativo',true)
       .order('destaque',{ascending:false}).order('criado_em',{ascending:false});
     state.produtos = prods || [];
