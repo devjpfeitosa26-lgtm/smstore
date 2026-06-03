@@ -35,6 +35,10 @@ async function carregarLoja(){
   st.loja = data || null;
   if(st.loja){
     $('hd-nome').textContent = st.loja.nome_loja;
+    if(st.loja.logo_url){
+      const d=$('hd-dot');
+      if(d){ d.style.background='#fff'; d.style.backgroundImage=`url("${st.loja.logo_url}")`; d.style.backgroundSize='cover'; d.style.backgroundPosition='center'; }
+    }
     $('l-nome').value = st.loja.nome_loja || '';
     $('l-wpp').value  = st.loja.whatsapp || '';
     $('l-desc').value = st.loja.descricao || '';
