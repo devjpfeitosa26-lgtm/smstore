@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layouts de Cartas — Jogo Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d0d1a;
+    font-family: 'Nunito', sans-serif;
+    color: #fff;
+    min-height: 100vh;
+  }
+
+  .page { max-width: 980px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    text-align: center;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #fff, #aaa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+
+  .subtitle { text-align: center; color: #666; font-size: 0.85rem; margin-bottom: 48px; letter-spacing: 1px; }
+
+  /* === CONTROLS === */
+  .controls {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+
+  .ctrl-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 14px 20px;
+  }
+
+  .ctrl-box label {
+    display: block;
+    font-size: 0.65rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .btn-row { display: flex; gap: 8px; }
+
+  .btn {
+    padding: 8px 20px;
+    border-radius: 9px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.82rem;
+    background: rgba(255,255,255,0.06);
+    color: #555;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn:hover { color: #999; background: rgba(255,255,255,0.1); }
+
+  .btn.on-std  { background: #111; color: #fff; border-color: #fff; }
+  .btn.on-18   { background: #8B0000; color: #fff; border-color: #8e44ad; }
+  .btn.on-drk  { background: #1a6636; color: #fff; border-color: #f1c40f; }
+  .btn.on-side { background: #1565c0; color: #fff; border-color: #1565c0; }
+
+  /* === CARD FLIP === */
+  .preview-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 64px;
+  }
+
+  .hint {
+    font-size: 0.7rem;
+    color: #444;
+    margin-top: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .scene { width: 220px; height: 310px; perspective: 900px; cursor: pointer; }
+
+  .flipper {
+    width: 100%; height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .flipper.flipped { transform: rotateY(180deg); }
+
+  .face {
+    position: absolute; inset: 0;
+    border-radius: 18px;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.7);
+    border: 4px solid;
+  }
+
+  .face .inner-ring {
+    position: absolute;
+    inset: 7px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    pointer-events: none;
+  }
+
+  .face.back { transform: rotateY(180deg); }
+
+  /* Standard */
+  .std { background: #111; border-color: #fff; }
+  /* +18 */
+  .a18 { background: linear-gradient(145deg, #5a0000, #c0392b, #7b241c); border-color: #8e44ad; }
+  /* Drink */
+  .drk { background: linear-gradient(145deg, #0d3d20, #1e8449, #145a32); border-color: #f1c40f; }
+
+  /* labels */
+  .top-label {
+    position: absolute;
+    top: 13px; left: 14px;
+    font-size: 0.55rem;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    font-family: 'Bebas Neue', sans-serif;
+    opacity: 0.3;
+  }
+
+  .badge-18 {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: #8e44ad;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    padding: 2px 7px;
+    border-radius: 5px;
+    letter-spacing: 1px;
+  }
+
+  .card-text { font-size: 0.95rem; font-weight: 800; line-height: 1.55; }
+  .card-text.cream { color: #ffe0e0; }
+
+  /* back icon wrap */
+  .back-icon { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .back-icon span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    opacity: 0.35;
+  }
+
+  /* === SHOWCASE === */
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    margin: 0 0 48px;
+  }
+
+  .showcase-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    text-align: center;
+    color: #999;
+    margin-bottom: 48px;
+  }
+
+  .row-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-align: center;
+    color: #777;
+    margin-bottom: 20px;
+  }
+
+  .card-row {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-bottom: 52px;
+  }
+
+  .card-slot { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .card-slot-label {
+    font-size: 0.62rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* Static small cards */
+  .small-card {
+    width: 170px;
+    height: 240px;
+    border-radius: 14px;
+    border: 3px solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.55);
+    overflow: hidden;
+  }
+
+  .small-card .inner-ring {
+    position: absolute; inset: 5px;
+    border-radius: 9px;
+    border: 1px solid rgba(255,255,255,0.07);
+    pointer-events: none;
+  }
+
+  .small-card.std-s { background: #111; border-color: #fff; }
+  .small-card.a18-s { background: linear-gradient(145deg, #5a0000, #c0392b, #7b241c); border-color: #8e44ad; }
+  .small-card.drk-s { background: linear-gradient(145deg, #0d3d20, #1e8449, #145a32); border-color: #f1c40f; }
+
+  .small-card .slabel {
+    position: absolute; top: 9px; left: 10px;
+    font-size: 0.5rem; letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Bebas Neue', sans-serif;
+    opacity: 0.3;
+  }
+
+  .small-card .s18 {
+    position: absolute; top: 7px; right: 7px;
+    background: #8e44ad;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.65rem;
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  .small-card .stext {
+    font-size: 0.75rem;
+    font-weight: 800;
+    line-height: 1.45;
+    color: #fff;
+  }
+  .small-card .stext.cream { color: #ffe0e0; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>DESIGNER DE CARTAS</h1>
+  <p class="subtitle">Jogo de Cartas Online — Todos os Layouts</p>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="ctrl-box">
+      <label>Tipo de carta</label>
+      <div class="btn-row">
+        <button class="btn on-std" id="bt-std" onclick="setType('standard')">Standard</button>
+        <button class="btn" id="bt-18" onclick="setType('adult')">+18</button>
+        <button class="btn" id="bt-drk" onclick="setType('drink')">Bebida</button>
+      </div>
+    </div>
+    <div class="ctrl-box">
+      <label>Lado da carta</label>
+      <div class="btn-row">
+        <button class="btn on-side" id="bt-front" onclick="setSide(false)">Frente</button>
+        <button class="btn" id="bt-back" onclick="setSide(true)">Traseira</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive preview -->
+  <div class="preview-wrap">
+    <div class="scene" onclick="toggleFlip()" title="Clique para virar">
+      <div class="flipper" id="flipper">
+
+        <!-- === STANDARD === -->
+        <div class="face std" id="sf-std-front">
+          <div class="inner-ring"></div>
+          <span class="top-label">Standard</span>
+          <p class="card-text">Conte uma história embaraçosa da sua infância 😅</p>
+        </div>
+        <div class="face back std" id="sf-std-back">
+          <div class="inner-ring"></div>
+          <div class="back-icon">
+            <svg width="90" height="90" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="46" fill="#FFD700"/>
+              <circle cx="50" cy="50" r="46" fill="none" stroke="#E6B800" stroke-width="2"/>
+              <path d="M30 38 Q35 30 40 38" stroke="#333" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+              <path d="M60 38 Q65 30 70 38" stroke="#333" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+              <path d="M25 58 Q50 82 75 58" fill="#cc3300" stroke="#333" stroke-width="2"/>
+              <path d="M25 58 Q50 72 75 58" fill="#fff"/>
+              <line x1="37" y1="58" x2="37" y2="66" stroke="#ddd" stroke-width="1.5"/>
+              <line x1="50" y1="58" x2="50" y2="68" stroke="#ddd" stroke-width="1.5"/>
+              <line x1="63" y1="58" x2="63" y2="66" stroke="#ddd" stroke-width="1.5"/>
+              <ellipse cx="26" cy="44" rx="4" ry="6" fill="#60BFFF" opacity="0.7"/>
+              <ellipse cx="74" cy="44" rx="4" ry="6" fill="#60BFFF" opacity="0.7"/>
+            </svg>
+            <span>Standard</span>
+          </div>
+        </div>
+
+        <!-- === +18 === -->
+        <div class="face a18" id="sf-18-front" style="display:none">
+          <div class="inner-ring"></div>
+          <span class="top-label" style="color:#fff">+18</span>
+          <span class="badge-18">+18</span>
+          <p class="card-text cream">Verdade ou consequência? Conte seu segredo mais picante 🔥</p>
+        </div>
+        <div class="face back a18" id="sf-18-back" style="display:none">
+          <div class="inner-ring"></div>
+          <div class="back-icon">
+            <svg width="90" height="90" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="56" r="38" fill="#9B59B6"/>
+              <circle cx="50" cy="56" r="38" fill="none" stroke="#6C3483" stroke-width="2"/>
+              <polygon points="28,24 20,8 36,20" fill="#6C3483"/>
+              <polygon points="72,24 80,8 64,20" fill="#6C3483"/>
+              <ellipse cx="37" cy="50" rx="6" ry="5" fill="#1a0a2e"/>
+              <ellipse cx="63" cy="50" rx="6" ry="5" fill="#1a0a2e"/>
+              <ellipse cx="38" cy="49" rx="2" ry="2" fill="#ff0055"/>
+              <ellipse cx="64" cy="49" rx="2" ry="2" fill="#ff0055"/>
+              <path d="M29 43 Q37 38 45 43" stroke="#4a0060" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M55 43 Q63 38 71 43" stroke="#4a0060" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M30 66 Q50 80 70 66" fill="#cc0044" stroke="#6C3483" stroke-width="1.5"/>
+              <path d="M30 66 Q50 72 70 66" fill="#ff4488"/>
+              <polygon points="41,66 37,73 45,73" fill="#fff"/>
+              <polygon points="59,66 55,73 63,73" fill="#fff"/>
+              <path d="M82 68 Q95 60 90 50 Q85 40 92 35" stroke="#6C3483" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <polygon points="92,35 98,30 94,42" fill="#6C3483"/>
+            </svg>
+            <span style="color:#d0a0ff">+18</span>
+          </div>
+        </div>
+
+        <!-- === DRINK === -->
+        <div class="face drk" id="sf-drk-front" style="display:none">
+          <div class="inner-ring"></div>
+          <span class="top-label">Bebida</span>
+          <p class="card-text">Beba um gole se você já mandou mensagem para a pessoa errada! 🍺</p>
+        </div>
+        <div class="face back drk" id="sf-drk-back" style="display:none">
+          <div class="inner-ring"></div>
+          <div class="back-icon">
+            <svg width="80" height="88" viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="32" cy="18" rx="18" ry="10" fill="#fff" opacity="0.95"/>
+              <ellipse cx="22" cy="20" rx="10" ry="8" fill="#fff" opacity="0.95"/>
+              <ellipse cx="44" cy="20" rx="10" ry="8" fill="#fff" opacity="0.95"/>
+              <ellipse cx="33" cy="14" rx="14" ry="7" fill="#fff"/>
+              <path d="M14 22 L14 90 Q14 98 22 98 L56 98 Q64 98 64 90 L64 22 Z" fill="#F4C430"/>
+              <path d="M14 22 L14 90 Q14 98 22 98 L56 98 Q64 98 64 90 L64 22 Z" fill="none" stroke="#D4A017" stroke-width="2"/>
+              <path d="M64 35 Q85 35 85 55 Q85 75 64 75" stroke="#D4A017" stroke-width="8" fill="none" stroke-linecap="round"/>
+              <clipPath id="c1"><path d="M16 30 L16 90 Q16 96 22 96 L56 96 Q62 96 62 90 L62 30 Z"/></clipPath>
+              <rect x="16" y="30" width="46" height="66" fill="#F4A900" clip-path="url(#c1)"/>
+              <circle cx="28" cy="70" r="3" fill="#FFD700" opacity="0.6"/>
+              <circle cx="42" cy="55" r="2" fill="#FFD700" opacity="0.6"/>
+              <circle cx="35" cy="80" r="2.5" fill="#FFD700" opacity="0.5"/>
+              <circle cx="52" cy="65" r="2" fill="#FFD700" opacity="0.6"/>
+              <path d="M22 22 Q24 30 22 35" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+              <path d="M44 22 Q46 32 44 38" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+            </svg>
+            <span style="color:#fde68a">Bebida</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <p class="hint">✦ Clique na carta para virar ✦</p>
+  </div>
+
+  <!-- SHOWCASE -->
+  <hr class="divider">
+  <h2 class="showcase-title">TODOS OS LAYOUTS</h2>
+
+  <!-- Standard -->
+  <p class="row-title">⬛ STANDARD — Preta · Bordas Brancas</p>
+  <div class="card-row">
+    <div class="card-slot">
+      <span class="card-slot-label">Frente</span>
+      <div class="small-card std-s">
+        <div class="inner-ring"></div>
+        <span class="slabel">Standard</span>
+        <p class="stext">Conte uma história embaraçosa da sua infância 😅</p>
+      </div>
+    </div>
+    <div class="card-slot">
+      <span class="card-slot-label">Traseira 😊</span>
+      <div class="small-card std-s">
+        <div class="inner-ring"></div>
+        <svg width="68" height="68" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="46" fill="#FFD700"/>
+          <path d="M30 38 Q35 30 40 38" stroke="#333" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M60 38 Q65 30 70 38" stroke="#333" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M25 58 Q50 82 75 58" fill="#cc3300" stroke="#333" stroke-width="2"/>
+          <path d="M25 58 Q50 72 75 58" fill="#fff"/>
+          <line x1="37" y1="58" x2="37" y2="66" stroke="#ddd" stroke-width="1.5"/>
+          <line x1="50" y1="58" x2="50" y2="68" stroke="#ddd" stroke-width="1.5"/>
+          <line x1="63" y1="58" x2="63" y2="66" stroke="#ddd" stroke-width="1.5"/>
+          <ellipse cx="26" cy="44" rx="4" ry="6" fill="#60BFFF" opacity="0.7"/>
+          <ellipse cx="74" cy="44" rx="4" ry="6" fill="#60BFFF" opacity="0.7"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- +18 -->
+  <p class="row-title">🔴 +18 — Vermelha · Bordas Roxas</p>
+  <div class="card-row">
+    <div class="card-slot">
+      <span class="card-slot-label">Frente</span>
+      <div class="small-card a18-s">
+        <div class="inner-ring"></div>
+        <span class="slabel">+18</span>
+        <span class="s18">+18</span>
+        <p class="stext cream">Verdade ou consequência? Conte seu segredo mais picante 🔥</p>
+      </div>
+    </div>
+    <div class="card-slot">
+      <span class="card-slot-label">Traseira 😈</span>
+      <div class="small-card a18-s">
+        <div class="inner-ring"></div>
+        <svg width="68" height="68" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="56" r="38" fill="#9B59B6"/>
+          <polygon points="28,24 20,8 36,20" fill="#6C3483"/>
+          <polygon points="72,24 80,8 64,20" fill="#6C3483"/>
+          <ellipse cx="37" cy="50" rx="6" ry="5" fill="#1a0a2e"/>
+          <ellipse cx="63" cy="50" rx="6" ry="5" fill="#1a0a2e"/>
+          <ellipse cx="38" cy="49" rx="2" ry="2" fill="#ff0055"/>
+          <ellipse cx="64" cy="49" rx="2" ry="2" fill="#ff0055"/>
+          <path d="M29 43 Q37 38 45 43" stroke="#4a0060" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M55 43 Q63 38 71 43" stroke="#4a0060" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M30 66 Q50 80 70 66" fill="#cc0044" stroke="#6C3483" stroke-width="1.5"/>
+          <path d="M30 66 Q50 72 70 66" fill="#ff4488"/>
+          <polygon points="41,66 37,73 45,73" fill="#fff"/>
+          <polygon points="59,66 55,73 63,73" fill="#fff"/>
+          <path d="M82 68 Q95 60 90 50 Q85 40 92 35" stroke="#6C3483" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <polygon points="92,35 98,30 94,42" fill="#6C3483"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drink -->
+  <p class="row-title">🟢 BEBIDA — Verde · Bordas Amarelas</p>
+  <div class="card-row">
+    <div class="card-slot">
+      <span class="card-slot-label">Frente</span>
+      <div class="small-card drk-s">
+        <div class="inner-ring"></div>
+        <span class="slabel">Bebida</span>
+        <p class="stext">Beba um gole se você já mandou mensagem para a pessoa errada! 🍺</p>
+      </div>
+    </div>
+    <div class="card-slot">
+      <span class="card-slot-label">Traseira 🍺</span>
+      <div class="small-card drk-s">
+        <div class="inner-ring"></div>
+        <svg width="56" height="68" viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="32" cy="18" rx="18" ry="10" fill="#fff" opacity="0.95"/>
+          <ellipse cx="22" cy="20" rx="10" ry="8" fill="#fff" opacity="0.95"/>
+          <ellipse cx="44" cy="20" rx="10" ry="8" fill="#fff" opacity="0.95"/>
+          <ellipse cx="33" cy="14" rx="14" ry="7" fill="#fff"/>
+          <path d="M14 22 L14 90 Q14 98 22 98 L56 98 Q64 98 64 90 L64 22 Z" fill="#F4C430"/>
+          <path d="M14 22 L14 90 Q14 98 22 98 L56 98 Q64 98 64 90 L64 22 Z" fill="none" stroke="#D4A017" stroke-width="2"/>
+          <path d="M64 35 Q85 35 85 55 Q85 75 64 75" stroke="#D4A017" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <clipPath id="c2"><path d="M16 30 L16 90 Q16 96 22 96 L56 96 Q62 96 62 90 L62 30 Z"/></clipPath>
+          <rect x="16" y="30" width="46" height="66" fill="#F4A900" clip-path="url(#c2)"/>
+          <circle cx="28" cy="70" r="3" fill="#FFD700" opacity="0.6"/>
+          <circle cx="42" cy="55" r="2" fill="#FFD700" opacity="0.6"/>
+          <circle cx="35" cy="80" r="2.5" fill="#FFD700" opacity="0.5"/>
+          <path d="M22 22 Q24 30 22 35" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+          <path d="M44 22 Q46 32 44 38" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let curType = 'standard';
+let curFlipped = false;
+
+const faceIds = ['std-front','std-back','18-front','18-back','drk-front','drk-back'];
+const typeMap = { standard: 'std', adult: '18', drink: 'drk' };
+
+function showFaces() {
+  faceIds.forEach(id => {
+    const el = document.getElementById('sf-'+id);
+    if (el) el.style.display = 'none';
+  });
+  const t = typeMap[curType];
+  const front = document.getElementById('sf-'+t+'-front');
+  const back = document.getElementById('sf-'+t+'-back');
+  if (front) front.style.display = 'flex';
+  if (back) back.style.display = 'flex';
+}
+
+function clearTypeBtns() {
+  ['bt-std','bt-18','bt-drk'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.className = 'btn';
+  });
+}
+
+function setType(t) {
+  curType = t;
+  curFlipped = false;
+  document.getElementById('flipper').classList.remove('flipped');
+  clearTypeBtns();
+  const classMap = { standard:'on-std', adult:'on-18', drink:'on-drk' };
+  const idMap = { standard:'bt-std', adult:'bt-18', drink:'bt-drk' };
+  document.getElementById(idMap[t]).classList.add(classMap[t]);
+  document.getElementById('bt-front').classList.add('on-side');
+  document.getElementById('bt-back').classList.remove('on-side');
+  showFaces();
+}
+
+function setSide(flip) {
+  curFlipped = flip;
+  const f = document.getElementById('flipper');
+  f.classList.toggle('flipped', flip);
+  document.getElementById('bt-front').className = 'btn' + (flip ? '' : ' on-side');
+  document.getElementById('bt-back').className = 'btn' + (flip ? ' on-side' : '');
+}
+
+function toggleFlip() {
+  setSide(!curFlipped);
+}
+
+showFaces();
+</script>
+</body>
+</html>

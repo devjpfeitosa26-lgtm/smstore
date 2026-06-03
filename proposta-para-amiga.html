@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sua Loja Online — Proposta</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f2ea;--paper:#fffdf9;--ink:#221f1a;--muted:#8a8378;--line:rgba(34,31,26,.1);
+--terra:#b5651d;--terra-dark:#8f4e14;--terra-soft:#f3e3d0;--green:#2e9e5b;--gold:#c79a3a;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:0 22px}
+h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.01em}
+em{color:var(--terra);font-style:italic}
+
+.hero{text-align:center;padding:80px 22px 50px;
+  background:radial-gradient(ellipse 70% 60% at 50% 0%,var(--terra-soft),transparent 70%)}
+.hero .badge{display:inline-block;background:var(--terra);color:#fff;font-size:.72rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:7px 16px;border-radius:999px;margin-bottom:24px}
+.hero h1{font-size:clamp(2.2rem,6vw,3.8rem);line-height:1.04;max-width:14ch;margin:0 auto}
+.hero p{color:var(--muted);font-size:1.12rem;max-width:540px;margin:20px auto 0}
+
+section{padding:46px 0}
+.lead{font-size:1.15rem;color:#473f33;max-width:680px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px}
+.feat{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px 22px;
+  box-shadow:0 14px 36px rgba(70,50,25,.07)}
+.feat .ico{font-size:1.8rem;margin-bottom:12px}
+.feat h3{font-size:1.18rem;margin-bottom:8px}
+.feat p{color:var(--muted);font-size:.94rem}
+
+.steps{counter-reset:s;margin-top:24px}
+.step{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--line)}
+.step:last-child{border:none}
+.step .num{counter-increment:s;flex:none;width:42px;height:42px;border-radius:50%;
+  background:var(--ink);color:var(--paper);display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-weight:600;font-size:1.1rem}
+.step .num::before{content:counter(s)}
+.step h3{font-size:1.12rem;margin-bottom:3px}
+.step p{color:var(--muted);font-size:.95rem}
+
+.gallery{margin-top:30px}
+.cat-row{margin-bottom:34px}
+.cat-row .ttl{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.cat-row .ttl .e{font-size:1.4rem}
+.cat-row .ttl h3{font-size:1.3rem}
+.cat-row .ttl span{margin-left:auto;font-size:.85rem;color:var(--muted)}
+.shots{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.shot{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  box-shadow:0 12px 30px rgba(70,50,25,.08)}
+.shot img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.shot .cap{padding:12px 14px}
+.shot .cap b{font-family:'Fraunces',serif;font-weight:600;font-size:.98rem;display:block}
+.shot .cap .pr{color:var(--terra);font-weight:700;font-size:.92rem;margin-top:2px}
+
+.flowbox{background:var(--ink);color:#f0ebe2;border-radius:22px;padding:38px 30px;margin-top:24px}
+.flowbox h3{color:#fff;font-size:1.4rem;margin-bottom:20px}
+.flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+.flow .f{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;
+  padding:14px 18px;font-size:.92rem;font-weight:600;text-align:center;flex:1;min-width:140px}
+.flow .arrow{color:var(--terra);font-size:1.5rem;font-weight:700}
+.flow .f.green{background:var(--green);border-color:var(--green)}
+
+.price{background:var(--terra-soft);border:1px solid rgba(181,101,29,.2);border-radius:22px;
+  padding:38px 30px;text-align:center;margin-top:24px}
+.price h3{font-size:1.6rem;margin-bottom:8px}
+.price .big{font-family:'Fraunces',serif;font-size:2.6rem;color:var(--terra-dark);font-weight:700}
+.price ul{list-style:none;max-width:420px;margin:20px auto 0;text-align:left}
+.price li{padding:7px 0;padding-left:30px;position:relative;color:#5a4a36}
+.price li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:800}
+
+.cta{text-align:center;padding:60px 22px}
+.cta a{display:inline-flex;align-items:center;gap:10px;background:var(--green);color:#fff;
+  text-decoration:none;padding:16px 34px;border-radius:14px;font-weight:700;font-size:1.05rem;
+  box-shadow:0 14px 30px rgba(46,158,91,.3)}
+footer{text-align:center;padding:30px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+
+@media(max-width:720px){.grid3,.shots,.flow{grid-template-columns:1fr;flex-direction:column}
+  .flow .arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="badge">Proposta</span>
+  <h1>Sua loja <em>online</em>, vendendo pelo WhatsApp</h1>
+  <p>Uma vitrine bonita e profissional onde você anuncia seus produtos, o cliente escolhe e a venda cai direto no seu WhatsApp. Simples assim.</p>
+</div>
+
+<div class="wrap">
+
+  <section>
+    <h2>O que é</h2>
+    <p class="lead">Um site só seu, onde você cadastra seus produtos — perfumes, eletrônicos, itens para casa e muito mais — com foto, preço e descrição. Os clientes navegam por categorias, tiram dúvidas com um atendente virtual inteligente e, na hora de comprar, são levados direto para a sua conversa no WhatsApp. Você fecha a venda do seu jeito, como já faz hoje, só que com muito mais alcance e credibilidade.</p>
+
+    <div class="grid3">
+      <div class="feat"><div class="ico">🛍️</div><h3>Vitrine profissional</h3><p>Seus produtos organizados por categoria, com fotos e preços, num visual moderno que passa confiança.</p></div>
+      <div class="feat"><div class="ico">💬</div><h3>Venda no WhatsApp</h3><p>Cada produto tem um botão que abre o WhatsApp com a mensagem pronta. Zero complicação para o cliente.</p></div>
+      <div class="feat"><div class="ico">🤖</div><h3>Atendente com IA</h3><p>Um assistente virtual responde dúvidas 24h e encaminha quem quer comprar direto pra você.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Como funciona <em>na prática</em></h2>
+    <div class="flowbox">
+      <h3>O caminho do cliente</h3>
+      <div class="flow">
+        <div class="f">Cliente abre<br>sua vitrine</div>
+        <div class="arrow">→</div>
+        <div class="f">Escolhe um produto<br>e tira dúvidas</div>
+        <div class="arrow">→</div>
+        <div class="f">Clica em<br>"Comprar"</div>
+        <div class="arrow">→</div>
+        <div class="f green">Cai no seu<br>WhatsApp 🎉</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Você no controle</h2>
+    <p class="lead">Você terá um painel próprio, com login e senha, onde gerencia tudo sozinha:</p>
+    <div class="steps">
+      <div class="step"><div class="num"></div><div><h3>Cadastra seus produtos</h3><p>Nome, preço, categoria, descrição e foto — tudo em poucos cliques.</p></div></div>
+      <div class="step"><div class="num"></div><div><h3>Organiza por categoria</h3><p>Domésticos, Eletrônicos, Perfumaria, Beleza… você decide e pode criar as suas.</p></div></div>
+      <div class="step"><div class="num"></div><div><h3>Controla o que aparece</h3><p>Esconde um produto, marca como destaque, atualiza preço ou estoque quando quiser.</p></div></div>
+      <div class="step"><div class="num"></div><div><h3>Recebe os pedidos no WhatsApp</h3><p>Sem intermediário, sem taxa por venda. O cliente fala direto com você.</p></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Alguns exemplos de produtos <em>por categoria</em></h2>
+    <p class="lead">Veja como ficam os produtos na vitrine — organizados, com foto e preço em destaque:</p>
+    <div class="gallery">
+
+      <div class="cat-row">
+        <div class="ttl"><span class="e">🌸</span><h3>Perfumaria</h3><span>fragrâncias e cuidados</span></div>
+        <div class="shots">
+          <div class="shot"><img id="i1"><div class="cap"><b>Eau de Parfum Âmbar Noir</b><span class="pr">R$ 289,90</span></div></div>
+          <div class="shot"><img id="i2"><div class="cap"><b>Perfume Floral Blanc</b><span class="pr">R$ 199,90</span></div></div>
+          <div class="shot"><img id="i3"><div class="cap"><b>Parfum Gold Edition</b><span class="pr">R$ 349,00</span></div></div>
+        </div>
+      </div>
+
+      <div class="cat-row">
+        <div class="ttl"><span class="e">💻</span><h3>Eletrônicos</h3><span>notebooks, SSD, memórias</span></div>
+        <div class="shots">
+          <div class="shot"><img id="i4"><div class="cap"><b>Notebook Ultrafino 16GB</b><span class="pr">R$ 3.299,00</span></div></div>
+          <div class="shot"><img id="i5"><div class="cap"><b>SSD NVMe 1TB</b><span class="pr">R$ 459,90</span></div></div>
+          <div class="shot"><img id="i6"><div class="cap"><b>Memória RAM 16GB</b><span class="pr">R$ 219,90</span></div></div>
+        </div>
+      </div>
+
+      <div class="cat-row">
+        <div class="ttl"><span class="e">🏠</span><h3>Domésticos</h3><span>para a casa</span></div>
+        <div class="shots">
+          <div class="shot"><img id="i8"><div class="cap"><b>Cafeteira Elétrica Premium</b><span class="pr">R$ 279,90</span></div></div>
+          <div class="shot"><img id="i9"><div class="cap"><b>Jogo de Panelas 5 peças</b><span class="pr">R$ 329,00</span></div></div>
+          <div class="shot"><img id="i10"><div class="cap"><b>Liquidificador 1200W</b><span class="pr">R$ 189,90</span></div></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>O melhor: <em>quase sem custo</em></h2>
+    <div class="price">
+      <h3>Hospedagem e ferramentas</h3>
+      <div class="big">R$ 0 / mês</div>
+      <p style="color:#6a5a44;margin-top:6px">no plano gratuito — você só paga se quiser recursos extras no futuro</p>
+      <ul>
+        <li>Site no ar sem mensalidade</li>
+        <li>Painel para gerenciar produtos</li>
+        <li>Atendente virtual com inteligência artificial</li>
+        <li>Vendas direto no seu WhatsApp, sem comissão</li>
+        <li>Funciona no celular e pode ser "instalado" como app</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<div class="cta">
+  <h2 style="margin-bottom:18px">Bora colocar sua loja no ar?</h2>
+  <a href="#" onclick="return false">Quero começar 🚀</a>
+</div>
+
+<footer>Proposta apresentada com carinho • Sua loja online</footer>
+
+<script src="demo-imgs.js"></script>
+<script>
+  const m = window.DEMO_IMGS||{};
+  ['i1','i2','i3','i4','i5','i6','i8','i9','i10'].forEach(id=>{
+    const el=document.getElementById(id); const key='d'+id.slice(1);
+    if(el && m[key]) el.src=m[key];
+  });
+</script>
+</body>
+</html>

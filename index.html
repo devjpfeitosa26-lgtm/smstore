@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vitrine</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#b5651d" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f7f2ea; --paper:#fffdf9; --ink:#221f1a; --muted:#8a8378;
+      --line:rgba(34,31,26,.10);
+      --terra:#b5651d; --terra-dark:#8f4e14; --terra-soft:#f3e3d0;
+      --green:#2e9e5b; --green-dark:#1f7a45;
+      --urge:#d23f3f; --gold:#c79a3a;
+      --shadow:0 18px 48px rgba(70,50,25,.10);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.55}
+    .shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+    aside{position:sticky;top:0;height:100vh;background:var(--paper);border-right:1px solid var(--line);
+      padding:26px 18px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+    .logo{display:flex;align-items:center;gap:11px;padding:0 6px 20px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+    .logo .dot{width:38px;height:38px;border-radius:50%;flex:none;background:radial-gradient(circle at 30% 30%,var(--terra),var(--terra-dark));box-shadow:0 6px 16px rgba(181,101,29,.35)}
+    .logo b{font-family:'Fraunces',serif;font-size:1.12rem;font-weight:600;line-height:1.1;display:block}
+    .logo span{font-size:.7rem;color:var(--muted)}
+    .nav-title{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:14px 10px 6px}
+    .cat{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;cursor:pointer;font-weight:600;font-size:.92rem;color:var(--ink);border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:background .15s,color .15s}
+    .cat:hover{background:var(--terra-soft)}
+    .cat.active{background:var(--ink);color:var(--paper)}
+    .cat .emoji{font-size:1.05rem;width:22px;text-align:center}
+    .cat .count{margin-left:auto;font-size:.72rem;background:rgba(0,0,0,.06);color:var(--muted);padding:2px 8px;border-radius:999px;font-weight:700}
+    .cat.active .count{background:rgba(255,255,255,.18);color:#fff}
+    .side-cta{margin-top:auto;padding-top:18px}
+    .wpp-side{display:flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;background:var(--green);color:#fff;padding:13px;border-radius:13px;font-weight:700;font-size:.9rem;box-shadow:0 10px 22px rgba(46,158,91,.3);transition:transform .15s}
+    .wpp-side:hover{transform:translateY(-2px)}
+    .side-painel{display:block;text-align:center;margin-top:10px;font-size:.78rem;color:var(--muted);text-decoration:none}
+    .side-painel:hover{color:var(--terra)}
+    main{padding:0}
+    .topbar{position:sticky;top:0;z-index:20;background:rgba(247,242,234,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 30px;display:flex;align-items:center;gap:16px}
+    .menu-btn{display:none;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 12px;font-size:1.1rem;cursor:pointer}
+    .search{flex:1;max-width:520px}
+    .search input{width:100%;padding:12px 16px;border-radius:13px;border:1px solid var(--line);background:var(--paper);font-family:inherit;font-size:.95rem;color:var(--ink);outline:none;transition:border-color .15s}
+    .search input:focus{border-color:var(--terra)}
+    .hero{padding:46px 30px 8px}
+    .hero .eyebrow{font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--terra);font-weight:700;margin-bottom:12px}
+    .hero h2{font-family:'Fraunces',serif;font-weight:600;line-height:1.04;font-size:clamp(1.9rem,4vw,3rem);letter-spacing:-.02em}
+    .hero h2 em{font-style:italic;color:var(--terra)}
+    .hero p{color:var(--muted);margin-top:10px;max-width:560px}
+    .sec-head{padding:30px 30px 6px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+    .sec-head h3{font-family:'Fraunces',serif;font-size:1.45rem;font-weight:600}
+    .sec-head .qtd{font-size:.82rem;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:22px;padding:18px 30px 90px}
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;animation:rise .5s ease both}
+    .card:hover{transform:translateY(-6px);box-shadow:0 26px 56px rgba(70,50,25,.16)}
+    @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+    .thumb{aspect-ratio:4/3;background:#ece4d6;position:relative;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .thumb .noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem}
+    .badges{position:absolute;top:11px;left:11px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+    .badge{font-size:.66rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:7px;color:#fff}
+    .badge.dest{background:var(--gold)}
+    .badge.urge{background:var(--urge)}
+    .badge.out{background:#6b6b6b}
+    .body{padding:16px;display:flex;flex-direction:column;gap:5px;flex:1}
+    .cat-tag{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--terra);font-weight:700}
+    .card h4{font-family:'Fraunces',serif;font-size:1.06rem;font-weight:600;line-height:1.2}
+    .desc{font-size:.84rem;color:var(--muted);flex:1}
+    .preco{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;margin-top:4px}
+    .preco small{font-size:.74rem;color:var(--muted);font-weight:400;font-family:'Manrope'}
+    .buy{margin-top:10px;display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;border:none;cursor:pointer;background:var(--green);color:#fff;padding:13px;border-radius:12px;font-family:inherit;font-weight:700;font-size:.9rem;transition:filter .15s,transform .1s}
+    .buy:hover{filter:brightness(1.06)}.buy:active{transform:scale(.98)}
+    .buy:disabled{background:#cfc8bb;cursor:not-allowed}
+    .empty{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--muted)}
+    .empty .big{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--ink);margin-bottom:8px}
+    .skeleton{height:320px;border-radius:18px;background:linear-gradient(100deg,#ece4d6 30%,#f4eee3 50%,#ece4d6 70%);background-size:200% 100%;animation:sh 1.2s infinite}
+    @keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
+    .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:39}
+    @media(max-width:860px){
+      .shell{grid-template-columns:1fr}
+      aside{position:fixed;left:0;top:0;z-index:40;width:264px;transform:translateX(-100%);transition:transform .25s;box-shadow:0 0 60px rgba(0,0,0,.25)}
+      aside.open{transform:none}
+      .scrim.show{display:block}
+      .menu-btn{display:block}
+      .hero{padding:30px 18px 4px}.topbar{padding:12px 16px}.sec-head{padding:24px 18px 4px}
+      .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:13px;padding:14px 16px 80px}
+      .body{padding:13px}
+    }
+  </style>
+</head>
+<body>
+  <div class="scrim" id="scrim"></div>
+  <div class="shell">
+    <aside id="sidebar">
+      <div class="logo">
+        <div class="dot"></div>
+        <div><b id="loja-nome">Vitrine</b><span id="loja-tag">catálogo</span></div>
+      </div>
+      <div class="nav-title">Categorias</div>
+      <div id="cats"></div>
+      <div class="side-cta">
+        <a class="wpp-side" id="wpp-geral" href="#" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.519 5.26l-.999 3.648 3.969-1.607zM17.45 14.382c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.149-.173.198-.297.298-.495.099-.198.05-.372-.025-.521-.074-.149-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          Falar no WhatsApp
+        </a>
+        <a class="side-painel" href="login.html">Acesso da loja &rarr;</a>
+      </div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <button class="menu-btn" id="menu-btn">&#9776;</button>
+        <div class="search"><input id="busca" type="search" placeholder="Buscar produto&hellip;" /></div>
+      </div>
+      <section class="hero">
+        <div class="eyebrow">Catálogo</div>
+        <h2 id="hero-titulo">Tudo o que você precisa, <em>num só lugar</em></h2>
+        <p id="hero-sub">Escolha, converse com nosso atendimento e finalize pelo WhatsApp.</p>
+      </section>
+      <div class="sec-head">
+        <h3 id="sec-titulo">Todos os produtos</h3>
+        <span class="qtd" id="sec-qtd"></span>
+      </div>
+      <section class="grid" id="grid">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3/dist/web.js'
+    Typebot.initBubble({
+      typebot: "SEU-FLUXO-TYPEBOT",
+      theme: { button:{ backgroundColor:"#b5651d" }, chatWindow:{ backgroundColor:"#fffdf9" } },
+      previewMessage: { message: "Oi! Posso te ajudar a escolher? 😊" }
+    })
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="demo-imgs.js"></script>
+  <script src="seed-demo.js"></script>
+  <script src="vitrine.js"></script>
+  <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+</body>
+</html>

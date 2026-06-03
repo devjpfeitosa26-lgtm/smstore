@@ -1,0 +1,14 @@
+{
+  "name": "Vitrine",
+  "short_name": "Vitrine",
+  "description": "Catálogo de produtos com compra pelo WhatsApp",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f1e9",
+  "theme_color": "#b5651d",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

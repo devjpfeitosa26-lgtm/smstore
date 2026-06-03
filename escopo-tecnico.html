@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escopo Técnico — O que preciso desenvolver</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#11140f;--paper:#1a1f17;--ink:#e8ead8;--muted:#8d937e;--line:rgba(255,255,255,.08);
+--terra:#d98a3a;--green:#4fd07a;--blue:#5aa9e6;--gold:#e0bb55;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:0 22px}
+h1,h2,h3{font-family:'Fraunces',serif;font-weight:600}
+code,.mono{font-family:'JetBrains Mono',monospace}
+
+.hero{padding:64px 22px 40px;border-bottom:1px solid var(--line);
+  background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(217,138,58,.12),transparent 70%)}
+.hero .wrap{padding:0 22px}
+.hero .tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--terra);
+  border:1px solid rgba(217,138,58,.3);padding:5px 12px;border-radius:7px;margin-bottom:20px}
+.hero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.05}
+.hero p{color:var(--muted);font-size:1.08rem;max-width:560px;margin-top:14px}
+
+section{padding:40px 0;border-bottom:1px solid var(--line)}
+section h2{font-size:1.6rem;margin-bottom:6px}
+section .sub{color:var(--muted);margin-bottom:22px}
+
+.stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.tech{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px}
+.tech .n{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:8px}
+.tech .role{color:var(--muted);font-size:.85rem;margin-top:4px}
+.tech .free{display:inline-block;margin-top:10px;font-size:.7rem;font-weight:700;color:var(--green);
+  background:rgba(79,208,122,.12);padding:3px 9px;border-radius:6px}
+.tech .paid{color:var(--gold);background:rgba(224,187,85,.12)}
+
+.task{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.task:last-child{border:none}
+.task .box{flex:none;width:24px;height:24px;border:2px solid var(--terra);border-radius:6px;margin-top:3px}
+.task .t b{font-size:1.02rem}
+.task .t p{color:var(--muted);font-size:.92rem;margin-top:2px}
+.task .eta{margin-left:auto;flex:none;font-family:'JetBrains Mono',monospace;font-size:.78rem;
+  color:var(--muted);background:rgba(255,255,255,.05);padding:4px 10px;border-radius:7px;white-space:nowrap}
+
+.codeblk{background:#0c0f0a;border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+  margin-top:14px;overflow-x:auto}
+.codeblk pre{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#c7d0b8;line-height:1.7}
+.codeblk .c{color:#6b7560}.codeblk .k{color:var(--terra)}.codeblk .s{color:var(--green)}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px}
+.panel h3{font-size:1.1rem;margin-bottom:10px;color:var(--terra)}
+.panel ul{list-style:none}
+.panel li{padding:6px 0 6px 22px;position:relative;font-size:.92rem;color:var(--ink)}
+.panel li::before{content:'▸';position:absolute;left:0;color:var(--terra)}
+
+.note{background:rgba(90,169,230,.08);border-left:3px solid var(--blue);border-radius:0 10px 10px 0;
+  padding:14px 18px;margin-top:16px;font-size:.92rem}
+.note b{color:var(--blue)}
+
+.files{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:var(--paper);
+  border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:14px}
+.files div{padding:3px 0}.files .f{color:var(--terra)}.files .d{color:var(--muted)}
+
+footer{text-align:center;padding:36px;color:var(--muted);font-size:.85rem}
+@media(max-width:640px){.cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <span class="tag">// escopo de desenvolvimento</span>
+    <h1>O que eu preciso desenvolver</h1>
+    <p>Resumo técnico do que tenho que montar e configurar para colocar a vitrine no ar. Tudo em ferramentas de plano gratuito.</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section>
+    <h2>A stack</h2>
+    <p class="sub">Site estático + banco de dados + bot. Sem servidor próprio para manter.</p>
+    <div class="stack">
+      <div class="tech"><div class="n">📦 GitHub</div><div class="role">Guarda o código</div><div class="free">grátis</div></div>
+      <div class="tech"><div class="n">🌐 GitHub Pages</div><div class="role">Hospeda o site</div><div class="free">grátis</div></div>
+      <div class="tech"><div class="n">🗄️ Supabase</div><div class="role">Banco + login + fotos</div><div class="free">grátis</div></div>
+      <div class="tech"><div class="n">💬 Typebot</div><div class="role">O balãozinho de dúvidas</div><div class="free">grátis</div></div>
+      <div class="tech"><div class="n">🧠 Gemini (Google)</div><div class="role">A IA do bot</div><div class="free">grátis</div></div>
+      <div class="tech"><div class="n">📱 WhatsApp</div><div class="role">Fechamento da venda</div><div class="free">grátis</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Checklist de tarefas</h2>
+    <p class="sub">A ordem em que vou tocar o projeto.</p>
+
+    <div class="task"><div class="box"></div><div class="t"><b>Criar projeto no Supabase</b><p>Rodar o script SQL que cria as tabelas <code>loja</code> e <code>produtos</code>, as regras de segurança e o armazenamento de imagens.</p></div><span class="eta">~15 min</span></div>
+
+    <div class="task"><div class="box"></div><div class="t"><b>Criar a conta de acesso da loja</b><p>Cadastrar o e-mail e senha da minha amiga no Supabase e registrar os dados da loja (nome + WhatsApp).</p></div><span class="eta">~5 min</span></div>
+
+    <div class="task"><div class="box"></div><div class="t"><b>Configurar as chaves no código</b><p>Colar a URL e a chave pública do Supabase no arquivo <code>config.js</code>.</p></div><span class="eta">~5 min</span></div>
+
+    <div class="task"><div class="box"></div><div class="t"><b>Subir no GitHub e ativar o Pages</b><p>Criar o repositório, enviar os arquivos e ligar a hospedagem. Site no ar com link próprio.</p></div><span class="eta">~15 min</span></div>
+
+    <div class="task"><div class="box"></div><div class="t"><b>Montar o bot no Typebot</b><p>Criar o fluxo de conversa, conectar a IA (Gemini) e configurar o redirecionamento para o WhatsApp ao finalizar.</p></div><span class="eta">~40 min</span></div>
+
+    <div class="task"><div class="box"></div><div class="t"><b>Incorporar o bot no site</b><p>Colar o ID do fluxo do Typebot no <code>index.html</code> — é o balãozinho que aparece no canto.</p></div><span class="eta">~5 min</span></div>
+
+    <div class="task"><div class="box"></div><div class="t"><b>Cadastrar os produtos reais</b><p>Pelo painel: foto, preço, categoria e descrição de cada item da minha amiga.</p></div><span class="eta">contínuo</span></div>
+
+    <div class="task"><div class="box"></div><div class="t"><b>Testar a ponta a ponta</b><p>Cadastrar produto → ver na vitrine → clicar em comprar → cair no WhatsApp → tirar dúvida no bot.</p></div><span class="eta">~20 min</span></div>
+  </section>
+
+  <section>
+    <h2>O balãozinho de dúvidas + IA</h2>
+    <p class="sub">Sim — é o Typebot, e ele aceita conectar uma LLM.</p>
+
+    <div class="cols">
+      <div class="panel">
+        <h3>O que o bot faz</h3>
+        <ul>
+          <li>Aparece como bolha no canto do site</li>
+          <li>Responde dúvidas sobre os produtos com IA</li>
+          <li>Funciona 24h, sem eu/ela precisar responder</li>
+          <li>Ao finalizar, leva o cliente pro WhatsApp</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Como conecto a IA</h3>
+        <ul>
+          <li>Typebot tem bloco nativo de <b>OpenAI</b> (pago)</li>
+          <li>Ou bloco de <b>requisição HTTP</b> → API do <b>Gemini</b> (grátis)</li>
+          <li>Vou usar o Gemini pra não ter custo</li>
+          <li>A chave sai do Google AI Studio</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note"><b>Resposta direta:</b> o campo do balãozinho é conectado ao Typebot, sim. E o Typebot aceita integrar uma LLM (OpenAI nativo, ou Gemini/qualquer outra via requisição HTTP). O cliente conversa com a IA e, na hora de comprar, é redirecionado pro WhatsApp.</div>
+
+    <div class="codeblk"><pre><span class="c"># Chamada que o Typebot faz ao Gemini (bloco HTTP)</span>
+<span class="k">POST</span> https://generativelanguage.googleapis.com/v1beta/
+       models/gemini-2.5-flash:generateContent?key=<span class="s">SUA_CHAVE</span>
+
+<span class="c"># corpo da requisição</span>
+{
+  "system_instruction": { "parts": [{ "text":
+     <span class="s">"Você é a atendente da loja. Tire dúvidas e, na hora
+      de comprar, envie o cliente pro botão do WhatsApp."</span> }] },
+  "contents": [{ "parts": [{ "text": "{{pergunta}}" }] }]
+}</pre></div>
+  </section>
+
+  <section>
+    <h2>Arquivos do projeto</h2>
+    <p class="sub">O que entra no repositório.</p>
+    <div class="files">
+      <div><span class="f">index.html</span> <span class="d">+ vitrine.js</span> — a vitrine pública (com sidebar de categorias)</div>
+      <div><span class="f">login.html</span> — acesso da loja</div>
+      <div><span class="f">painel.html</span> <span class="d">+ painel.js</span> — painel para gerenciar produtos</div>
+      <div><span class="f">config.js</span> — onde colo as chaves do Supabase</div>
+      <div><span class="f">supabase-setup.sql</span> — cria o banco (rodo 1x)</div>
+      <div><span class="f">demo-imgs.js</span> <span class="d">+ seed-demo.js</span> — produtos de exemplo (removo depois)</div>
+      <div><span class="f">manifest.json</span> <span class="d">+ sw.js + ícones</span> — vira "app" no celular</div>
+    </div>
+  </section>
+
+  <section style="border:none">
+    <h2>Decisões em aberto</h2>
+    <div class="cols">
+      <div class="panel"><h3>Categorias</h3><ul>
+        <li>Domésticos</li><li>Eletrônicos</li><li>Perfumaria</li><li>Beleza &amp; Cuidados</li>
+        <li><span style="color:var(--muted)">(posso renomear/adicionar depois)</span></li>
+      </ul></div>
+      <div class="panel"><h3>A definir</h3><ul>
+        <li>Número de WhatsApp final</li><li>Nome oficial da loja</li>
+        <li>Cor principal do tema</li><li>OpenAI (paga) ou Gemini (grátis)</li>
+      </ul></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Escopo técnico • uso interno</footer>
+</body>
+</html>

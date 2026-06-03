@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrar — Painel</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f6f1e9;--paper:#fffdf9;--ink:#22201c;--muted:#8a8378;
+      --line:rgba(34,32,28,.12);--terra:#b5651d;--terra-dark:#8f4e14}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--ink);
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+      background-image:radial-gradient(circle at 20% 0%,rgba(181,101,29,.08),transparent 45%)}
+    .card{width:min(100%,420px);background:var(--paper);border:1px solid var(--line);
+      border-radius:24px;padding:42px 36px;box-shadow:0 24px 60px rgba(60,45,25,.14)}
+    .dot{width:46px;height:46px;border-radius:50%;margin-bottom:22px;
+      background:radial-gradient(circle at 30% 30%,var(--terra),var(--terra-dark));
+      box-shadow:0 8px 22px rgba(181,101,29,.35)}
+    h1{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:600;margin-bottom:6px}
+    .sub{color:var(--muted);font-size:.92rem;margin-bottom:28px}
+    label{display:block;font-size:.82rem;font-weight:600;margin:14px 0 6px}
+    input{width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:13px;
+      background:#fff;font-family:inherit;font-size:.96rem;color:var(--ink);outline:none;transition:border-color .15s}
+    input:focus{border-color:var(--terra)}
+    button{width:100%;margin-top:24px;padding:14px;border:none;border-radius:13px;cursor:pointer;
+      background:var(--ink);color:var(--paper);font-family:inherit;font-weight:700;font-size:.98rem;
+      transition:transform .1s,opacity .15s}
+    button:hover{transform:translateY(-1px)}button:disabled{opacity:.6;cursor:wait}
+    .fb{margin-top:16px;font-size:.86rem;min-height:20px}
+    .fb.error{color:#b03030}.fb.success{color:#2e7d32}
+    .back{display:block;text-align:center;margin-top:20px;color:var(--terra);
+      text-decoration:none;font-size:.85rem;font-weight:600}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="dot"></div>
+    <h1>Painel da Loja</h1>
+    <p class="sub">Entre para gerenciar seus produtos.</p>
+    <label for="email">E-mail</label>
+    <input id="email" type="email" autocomplete="username" placeholder="voce@email.com" />
+    <label for="senha">Senha</label>
+    <input id="senha" type="password" autocomplete="current-password" placeholder="••••••••" />
+    <button id="btn">Entrar</button>
+    <div class="fb" id="fb"></div>
+    <a class="back" href="index.html">← Voltar para a vitrine</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script>
+    const { SUPABASE_URL, SUPABASE_ANON } = window.VITRINE_CONFIG;
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const $ = id => document.getElementById(id);
+    const fb = (m,t='') => { $('fb').textContent=m; $('fb').className='fb '+t; };
+
+    (async()=>{ const {data:{session}} = await sb.auth.getSession(); if(session) location.replace('painel.html'); })();
+
+    $('btn').onclick = async ()=>{
+      const email=$('email').value.trim(), password=$('senha').value;
+      if(!email||!password){ fb('Preencha e-mail e senha.','error'); return; }
+      $('btn').disabled=true; fb('Entrando…');
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if(error){ fb(error.message.includes('Invalid')?'E-mail ou senha incorretos.':error.message,'error'); $('btn').disabled=false; return; }
+      fb('✓ Entrando…','success'); location.replace('painel.html');
+    };
+    [$('email'),$('senha')].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter')$('btn').click();}));
+  </script>
+</body>
+</html>
