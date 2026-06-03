@@ -58,11 +58,11 @@
     .card{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;animation:rise .5s ease both}
     .card:hover{transform:translateY(-6px);box-shadow:0 26px 56px rgba(70,50,25,.16)}
     @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-    .thumb{aspect-ratio:4/3;background:#ece4d6;position:relative;overflow:hidden}
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .thumb{aspect-ratio:4/3;background:#fff;position:relative;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:contain;padding:10px;display:block}
     .thumb .noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem}
     .badges{position:absolute;top:11px;left:11px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
-    .badge{font-size:.66rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:7px;color:#fff}
+    .badge{font-size:.66rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:5px 9px;border-radius:7px;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18)}
     .badge.dest{background:var(--gold)}
     .badge.urge{background:var(--urge)}
     .badge.out{background:#6b6b6b}
