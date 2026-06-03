@@ -44,6 +44,10 @@ function aplicarLoja(){
   document.title = l.nome_loja;
   $('loja-nome').textContent = l.nome_loja;
   $('loja-tag').textContent = 'catálogo online';
+  if (l.logo_url){
+    const dot = document.querySelector('.logo .dot');
+    if (dot){ dot.style.background='#fff'; dot.style.backgroundImage=`url("${l.logo_url}")`; dot.style.backgroundSize='cover'; dot.style.backgroundPosition='center'; }
+  }
   if (l.descricao) $('hero-sub').textContent = l.descricao;
   if (l.cor_tema) document.documentElement.style.setProperty('--terra', l.cor_tema);
   const link = `https://wa.me/${onlyNums(l.whatsapp)}?text=${encodeURIComponent(`Olá! Vi a vitrine *${l.nome_loja}* e gostaria de mais informações.`)}`;
@@ -102,13 +106,13 @@ function render(){
       if (escasso)    badges += `<span class="badge urge">🔥 ${p.estoque===1?'Última unidade':'Só '+p.estoque+' restantes'}</span>`;
     }
     return `
-      <article class="card" style="animation-delay:${i*35}ms">
+      <article class="card" style="animation-delay:${i*35}ms" data-open="${p.id}">
         <div class="thumb">${img}<div class="badges">${badges}</div></div>
         <div class="body">
           <span class="cat-tag">${escHtml(p.categoria||'Geral')}</span>
           <h4>${escHtml(p.nome)}</h4>
-          <p class="desc">${escHtml(p.descricao||'')}</p>
-          <div class="preco">${fmtBRL(p.preco)} ${escasso?'<small>• poucas unidades</small>':''}</div>
+          <div class="preco">${fmtBRL(p.preco)}</div>
+          ${p.resumo ? `<div class="resumo">${escHtml(p.resumo)}</div>` : (escasso?`<div class="resumo">poucas unidades</div>`:'')}
           <button class="buy" data-id="${p.id}" ${esgotado?'disabled':''}>
             ${esgotado ? 'Avise-me quando voltar' : '🛒 Comprar pelo WhatsApp'}
           </button>
@@ -116,8 +120,45 @@ function render(){
       </article>`;
   }).join('');
 
-  $('grid').querySelectorAll('.buy:not(:disabled)').forEach(btn => btn.onclick = () => comprar(btn.dataset.id));
+  // clicar no card (menos no botão) abre o detalhe
+  $('grid').querySelectorAll('[data-open]').forEach(card => {
+    card.addEventListener('click', e => {
+      if (e.target.closest('.buy')) return;
+      abrirDetalhe(card.dataset.open);
+    });
+  });
+  $('grid').querySelectorAll('.buy:not(:disabled)').forEach(btn => btn.onclick = e => { e.stopPropagation(); comprar(btn.dataset.id); });
 }
+
+/* ── DETALHE DO PRODUTO (modal) ── */
+function abrirDetalhe(id){
+  const p = state.produtos.find(x => String(x.id) === String(id));
+  if (!p) return;
+  const esgotado = p.estoque <= 0;
+  const escasso = !esgotado && p.estoque <= 3;
+  const img = p.imagem_url
+    ? `<img src="${p.imagem_url}" alt="${escAttr(p.nome)}">`
+    : `<div class="pd-noimg">sem imagem</div>`;
+  let badges = '';
+  if (esgotado) badges += `<span class="badge out">Esgotado</span>`;
+  else { if (p.destaque) badges += `<span class="badge dest">⭐ Destaque</span>`;
+         if (escasso) badges += `<span class="badge urge">🔥 ${p.estoque===1?'Última unidade':'Só '+p.estoque+' restantes'}</span>`; }
+
+  $('pd-body').innerHTML = `
+    <div class="pd-img">${img}<div class="badges">${badges}</div></div>
+    <div class="pd-info">
+      <span class="cat-tag">${escHtml(p.categoria||'Geral')}</span>
+      <h2>${escHtml(p.nome)}</h2>
+      ${p.resumo ? `<div class="pd-resumo">${escHtml(p.resumo)}</div>` : ''}
+      <div class="pd-preco">${fmtBRL(p.preco)}</div>
+      ${p.descricao ? `<p class="pd-desc">${escHtml(p.descricao)}</p>` : '<p class="pd-desc" style="color:var(--muted)">Sem descrição adicional.</p>'}
+      <button class="buy pd-buy" ${esgotado?'disabled':''}>${esgotado?'Indisponível no momento':'🛒 Comprar pelo WhatsApp'}</button>
+    </div>`;
+  if(!esgotado) $('pd-body').querySelector('.pd-buy').onclick = ()=>comprar(p.id);
+  $('pd').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function fecharDetalhe(){ $('pd').classList.remove('show'); document.body.style.overflow=''; }
 
 function comprar(id){
   const p = state.produtos.find(x => String(x.id) === String(id));
@@ -137,6 +178,11 @@ Ainda está disponível?`;
 const fecharSidebar = () => { $('sidebar').classList.remove('open'); $('scrim').classList.remove('show'); };
 $('menu-btn').onclick = () => { $('sidebar').classList.add('open'); $('scrim').classList.add('show'); };
 $('scrim').onclick = fecharSidebar;
+
+/* fechar modal de detalhe */
+$('pd-close').onclick = fecharDetalhe;
+$('pd').onclick = e => { if(e.target === $('pd')) fecharDetalhe(); };
+document.addEventListener('keydown', e => { if(e.key==='Escape') fecharDetalhe(); });
 
 /* busca */
 $('busca').addEventListener('input', e => { state.busca = e.target.value; render(); });
