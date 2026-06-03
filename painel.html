@@ -90,6 +90,7 @@
   <main class="wrap">
     <div class="tabs">
       <button class="tab active" data-tab="prod">Produtos</button>
+      <button class="tab" data-tab="cats">Categorias</button>
       <button class="tab" data-tab="loja">Dados da loja</button>
     </div>
 
@@ -103,10 +104,34 @@
       <div id="lista"></div>
     </section>
 
+    <!-- CATEGORIAS -->
+    <section id="sec-cats">
+      <div class="modal" style="margin:0;box-shadow:none;border:1px solid var(--line);max-width:560px">
+        <h2>Categorias</h2>
+        <p style="color:var(--muted);font-size:.9rem;margin-bottom:16px">Crie as categorias da sua loja. Elas aparecem no menu lateral da vitrine.</p>
+        <div class="row2" style="align-items:flex-end">
+          <div><label>Emoji</label><input id="c-emoji" maxlength="2" placeholder="🌸" style="text-align:center;font-size:1.2rem" /></div>
+          <div style="grid-column:span 1"><label>Nome da categoria</label><input id="c-nome" placeholder="Ex.: Perfumaria" /></div>
+        </div>
+        <button class="btn primary" id="add-cat" style="margin-top:14px;width:100%;justify-content:center;padding:12px">+ Adicionar categoria</button>
+        <div class="fb" id="fb-cat"></div>
+        <div id="lista-cats" style="margin-top:20px"></div>
+      </div>
+    </section>
+
     <!-- LOJA -->
     <section id="sec-loja">
       <div class="modal" style="margin:0;box-shadow:none;border:1px solid var(--line);max-width:560px">
         <h2>Dados da loja</h2>
+        <label>Logo da loja</label>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:6px">
+          <img id="l-logo-prev" style="width:64px;height:64px;border-radius:14px;object-fit:contain;background:#fff;border:1px solid var(--line);padding:4px;display:none" alt="" />
+          <div id="l-logo-vazio" style="width:64px;height:64px;border-radius:14px;background:var(--terra-soft);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex:none">🏪</div>
+          <div style="flex:1">
+            <input id="l-logo-file" type="file" accept="image/*" style="font-size:.85rem" />
+            <p style="color:var(--muted);font-size:.78rem;margin-top:4px">PNG ou JPG. Aparece no topo da vitrine.</p>
+          </div>
+        </div>
         <label>Nome da loja</label>
         <input id="l-nome" placeholder="Ex.: Loja da Fulana" />
         <label>WhatsApp (com DDI e DDD, só números)</label>
@@ -132,14 +157,12 @@
         <div><label>Preço (R$) *</label><input id="p-preco" type="number" step="0.01" min="0" placeholder="199.90" /></div>
         <div><label>Estoque</label><input id="p-estoque" type="number" min="0" value="1" /></div>
       </div>
+      <label>Resumo curto <span style="color:var(--muted);font-weight:400">(aparece abaixo do preço)</span></label>
+      <input id="p-resumo" placeholder="Ex.: 100ml • 16GB • 5 peças" maxlength="40" />
       <label>Categoria</label>
-      <input id="p-cat" list="cats" placeholder="Ex.: Perfumes" />
-      <datalist id="cats">
-        <option>Casa</option><option>Perfumes</option><option>Eletrônicos</option>
-        <option>Notebooks</option><option>Memórias</option><option>SSD</option><option>Geral</option>
-      </datalist>
-      <label>Descrição</label>
-      <textarea id="p-desc" placeholder="Detalhes do produto…"></textarea>
+      <select id="p-cat"></select>
+      <label>Descrição completa</label>
+      <textarea id="p-desc" placeholder="Detalhes do produto (aparece quando o cliente clica no produto)…"></textarea>
       <label>Foto do produto</label>
       <input id="p-file" type="file" accept="image/*" />
       <img id="p-prev" class="preview" alt="" />
